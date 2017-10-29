@@ -12,17 +12,14 @@ extra-source-files:
 
 ghc-options: -Wall
 default-extensions:
-- DefaultSignatures
-- GADTs
-- GeneralizedNewtypeDeriving
 - LambdaCase
 - OverloadedStrings
+- FlexibleContexts
 
 library:
   dependencies:
   - base
   - monad-logger
-  - monad-time
   - mtl
   - text
   - time
@@ -48,8 +45,6 @@ tests:
     - bytestring
     - fast-logger
     - hspec
-    - monad-logger
-    - monad-time
     - mtl
     - mtl-style-example
     - text
