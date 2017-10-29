@@ -1,21 +1,24 @@
 module MTLStyleExample.MainSpec where
 
-import Data.Function ((&))
+import Prelude hiding (log, readFile)
+
 import Data.Functor.Identity (runIdentity)
+import Control.Monad.Writer (runWriterT)
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import Test.Hspec
 
 import MTLStyleExample.Main
-import MTLStyleExample.Test.Stubs
+import qualified MTLStyleExample.Test.Stubs as Stub
 
 spec :: Spec
 spec = describe "main" $ do
-  let epoch = posixSecondsToUTCTime 0
-      ((), logMessages) = runIdentity $ main
-        & runArgumentsT ["sample.txt"]
-        & runFileSystemT [("sample.txt", "Alyssa")]
-        & runLoggerT
-        & runTickingClockT epoch
+  let ((), logMessages) = runner $ main (getArgs, readFile, log, currentTime)
+      getArgs = Stub.getArgs ["sample.txt"]
+      readFile = Stub.readFile [("sample.txt", "Alyssa")]
+      log = Stub.log
+      currentTime = Stub.currentTime
+      runner = runIdentity . runWriterT . Stub.runTickingClockT epoch
+      epoch = posixSecondsToUTCTime 0
 
   it "prints two log messages" $
     length logMessages `shouldBe` 2
